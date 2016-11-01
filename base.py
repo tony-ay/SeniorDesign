@@ -1,4 +1,7 @@
 ﻿import cybw
+
+from squad import Squad
+
 from time import sleep
 
 client = cybw.BWAPIClient
@@ -62,6 +65,8 @@ def drawVisibilityData():
 
             Broodwar.drawDotMap(cybw.Position(x*32+16, y*32+16), drawColor)
 
+squad = Squad()
+
 print("Connecting...")
 reconnect()
 while True:
@@ -108,6 +113,9 @@ while True:
                     unit.rightClick(closestMineral)
             elif unit.getType().isResourceDepot():
                 unit.train(Broodwar.self().getRace().getWorker())
+            elif unit.getType().getName == "Terran_Marine":
+                squad.add(unit)
+
         events = Broodwar.getEvents()
         print(len(events))
 
@@ -177,6 +185,9 @@ while True:
                     Broodwar << e.getUnit() << " is now owned by " << e.getUnit().getPlayer() << "\n"
             elif eventtype == cybw.EventType.SaveGame:
                 Broodwar << "The game was saved to " << e.getText() << "\n"
+
+        squad.update(Broodwar, events)
+
         if show_bullets:
             drawBullets()
         if show_visibility_data:
@@ -185,4 +196,3 @@ while True:
         Broodwar.drawTextScreen(cybw.Position(300, 0), "FPS: " +
             str(Broodwar.getAverageFPS()))
         client.update()
-
