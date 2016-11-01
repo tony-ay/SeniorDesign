@@ -1,4 +1,4 @@
-﻿import cybw
+import cybw
 
 from squad import Squad
 
@@ -52,6 +52,7 @@ def drawBullets():
         Broodwar.drawTextMap(p, chr(textColor) + str(bullet.getType()))
 
 def drawVisibilityData():
+    #Gilberto: This function does not work. It breaks python. Not sure why.
     wid = Broodwar.mapWidth()
     hgt = Broodwar.mapHeight()
     for x in range(wid):
@@ -62,8 +63,24 @@ def drawVisibilityData():
                     drawColor = cybw.Colors.Green
                 else:
                     drawColor = cybw.Colors.Blue
-
-            Broodwar.drawDotMap(cybw.Position(x*32+16, y*32+16), drawColor)
+            #used to test how many times this function was called
+            
+            #its called alot but its supposed to fill map with dots of certain color
+            #so it makes sense its called alot
+            #drawDotMap is an overloaded function of Drawdot but drawdot is not in CYBW
+            #so maybe thats why it doesnt work, not sure though since it seems to work
+            #but after alot of calls it breaks.
+            
+            Broodwar.drawDotMap(cybw.Position(x, y), drawColor)
+def combatDQN_input(unit):
+    #takes combat squad leader unit and returns
+    #distance to closest enemy
+    #number of enemy units in range
+    #total health of all enemy units in range
+    #weapon cooldown of unit (if applicable)
+    #Units own health
+    #number of friendly units in range
+    
 
 squad = Squad()
 
@@ -120,6 +137,7 @@ while True:
         print(len(events))
 
     while Broodwar.isInGame():
+        units    = Broodwar.self().getUnits()
         events = Broodwar.getEvents()
         for e in events:
             eventtype = e.getType()
