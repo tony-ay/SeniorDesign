@@ -64,7 +64,7 @@ def drawVisibilityData():
                 else:
                     drawColor = cybw.Colors.Blue
             #used to test how many times this function was called
-            print ("Im here")
+            
             #its called alot but its supposed to fill map with dots of certain color
             #so it makes sense its called alot
             #drawDotMap is an overloaded function of Drawdot but drawdot is not in CYBW
@@ -72,6 +72,15 @@ def drawVisibilityData():
             #but after alot of calls it breaks.
             
             Broodwar.drawDotMap(cybw.Position(x, y), drawColor)
+def combatDQN_input(unit):
+    #takes combat squad leader unit and returns
+    #distance to closest enemy
+    #number of enemy units in range
+    #total health of all enemy units in range
+    #weapon cooldown of unit (if applicable)
+    #Units own health
+    #number of friendly units in range
+    
 
 squad = Squad()
 
