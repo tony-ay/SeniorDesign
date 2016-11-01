@@ -137,7 +137,6 @@ while True:
         print(len(events))
 
     while Broodwar.isInGame():
-        units    = Broodwar.self().getUnits()
         events = Broodwar.getEvents()
         for e in events:
             eventtype = e.getType()
