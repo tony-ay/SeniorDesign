@@ -76,8 +76,8 @@ def combatDQN_input(unit):
     #takes combat squad leader unit and returns
     #number of enemy units in range(so far returns unitset of all units in range)
     print("Im here")
-    sett=unit.getUnitsInRadius(unit.getType().groundWeapon().maxRange())
-    
+    print(unit.getType().sightRange())
+    sett=unit.getUnitsInRadius(unit.getType().sightRange())
     #distance to closest enemy
     #print(sett)
     
