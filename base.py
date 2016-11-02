@@ -74,12 +74,22 @@ def drawVisibilityData():
             Broodwar.drawDotMap(cybw.Position(x, y), drawColor)
 def combatDQN_input(unit):
     #takes combat squad leader unit and returns
+    #number of enemy units in range(so far returns unitset of all units in range)
+    print("Im here")
+    sett=unit.getUnitsInRadius(unit.getType().groundWeapon().maxRange())
+    
     #distance to closest enemy
-    #number of enemy units in range
+    #print(sett)
+    
     #total health of all enemy units in range
+    
     #weapon cooldown of unit (if applicable)
+    
     #Units own health
+    #unit.getHitPoints()
+    
     #number of friendly units in range
+    
     
 
 squad = Squad()
@@ -130,11 +140,13 @@ while True:
                     unit.rightClick(closestMineral)
             elif unit.getType().isResourceDepot():
                 unit.train(Broodwar.self().getRace().getWorker())
-            elif unit.getType().getName == "Terran_Marine":
+            elif unit.getType().getName() == "Terran_Marine":
+                print("Im here1")
+                combatDQN_input(unit)
                 squad.add(unit)
 
         events = Broodwar.getEvents()
-        print(len(events))
+        #print(len(events))
 
     while Broodwar.isInGame():
         events = Broodwar.getEvents()
