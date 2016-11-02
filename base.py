@@ -72,24 +72,41 @@ def drawVisibilityData():
             #but after alot of calls it breaks.
             
             Broodwar.drawDotMap(cybw.Position(x, y), drawColor)
-def combatDQN_input(unit):
+def combatDQN_input(squad_leader,bw):
     #takes combat squad leader unit and returns
-    #number of enemy units in range(so far returns unitset of all units in range)
-    print("Im here")
-    print(unit.getType().sightRange())
-    sett=unit.getUnitsInRadius(unit.getType().sightRange())
-    #distance to closest enemy
+    
+    number_of_enemy_units=0
+    number_of_freindly_units=0
+    closest_enemy=None
+    distance_to_enemy=999
+    total_enemy_Hitpoints=0
+    sett=squad_leader.getUnitsInRadius(squad_leader.getType().sightRange())
+    for s in sett:
+        if s.getPlayer().getID() != bw.self().getID():
+            #number of enemy units in range
+            number_of_enemy_units+=1
+            #distance to closest enemy
+            tmp = squad_leader.getDistance(s)
+            if tmp<distance:
+                distance_to_enemy=tmp
+                closest_enemy=s
+            #total health of all enemy units in range
+            total_enemy_Hitpoints+=s.getHitPoints()
+        if s.getPlayer().getID() == bw.self().getID():
+            #number of friendly units in range
+            number_of_freindly_units+=1
     #print(sett)
-    
-    #total health of all enemy units in range
-    
-    #weapon cooldown of unit (if applicable)
+    #print(number_of_enemy_units)
+    #print(distance_to_enemy)
+    #print(closest_enemy)
+    #print(total_enemy_Hitpoints)
+    #print(number_of_freindly_units)
     
     #Units own health
-    #unit.getHitPoints()
+    own_health=squad_leader.getHitPoints()
+    #print(own_health)
     
-    #number of friendly units in range
-    
+    return number_of_enemy_units, number_of_freindly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,own_health
     
 
 squad = Squad()
@@ -141,8 +158,8 @@ while True:
             elif unit.getType().isResourceDepot():
                 unit.train(Broodwar.self().getRace().getWorker())
             elif unit.getType().getName() == "Terran_Marine":
-                print("Im here1")
-                combatDQN_input(unit)
+                #print("Im here1")
+                #number_of_enemy_units,number_of_freindly_units, distance_to_enemy,closest_enemy,total_enemy_Hitpoints,own_health=combatDQN_input(unit,Broodwar)
                 squad.add(unit)
 
         events = Broodwar.getEvents()
