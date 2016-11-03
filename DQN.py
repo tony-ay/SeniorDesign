@@ -120,8 +120,8 @@ def trainNetwork(self, number_of_enemy_units, number_of_freindly_units, distance
     
     # store the transition in D
     D.append((s_t, action_index, r_t, s_t1, terminal))
-        if len(D) > REPLAY_MEMORY:
-            D.popleft()
+    if len(D) > REPLAY_MEMORY:
+        D.popleft()
     #only train if done observing
     if t > OBSERVE:
         minibatch = random.sample(D, BATCH)

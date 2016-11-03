@@ -1,7 +1,7 @@
 import cybw
 
 from squad import Squad
-
+import DQN
 from time import sleep
 
 client = cybw.BWAPIClient
