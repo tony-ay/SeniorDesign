@@ -237,6 +237,8 @@ while True:
             elif eventtype == cybw.EventType.SaveGame:
                 Broodwar << "The game was saved to " << e.getText() << "\n"
 
+        squad.update(Broodwar, events)
+
         if ctr > 100:
             ctr = 0
             xpos = randint(-500, 500)
@@ -246,8 +248,6 @@ while True:
             squad.attackMove(pos)
         else:
             ctr += 1
-
-        squad.update(Broodwar, events)
 
         if show_bullets:
             drawBullets()
