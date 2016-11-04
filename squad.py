@@ -11,9 +11,18 @@ class Squad:
         self.units.append(unit)
         self.updateCenter()
 
+    def getPosShift(self, position):
+        xshift = self.center.getX() - position.getX()
+        yshift = self.center.getY() - position.getY()
+        return (xshift, yshift)
+
     def attackMove(self, position):
         for unit in  self.units:
             unit.attack(position)
+
+    def attackShift(self, shift):
+        for unit in  self.units:
+            unit.attack(Position(shift[0] + unit.getPosition().getX(), shift[1] + unit.getPosition().getY()))
 
     def updateCenter(self):
         self.center = Position(0,0)
@@ -22,8 +31,9 @@ class Squad:
         self.center /= len(self.units)
 
     def update(self, bw, events):
-    	for e in events:
-    		if e.getType() == cybw.EventType.UnitShow:
-    			unit = e.getUnit()
-    			if unit.getPlayer().getID() != bw.self().getID():
-    				bw << "Enemy unit " << unit << " spotted" << "\n"
+        self.updateCenter()
+        for e in events:
+            if e.getType() == cybw.EventType.UnitShow:
+                unit = e.getUnit()
+                if unit.getPlayer().getID() != bw.self().getID():
+                    bw << "Enemy unit " << unit << " spotted" << "\n"

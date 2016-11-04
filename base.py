@@ -1,8 +1,11 @@
 import cybw
+from cybw import Position
 
 from squad import Squad
-import DQN
+#import DQN
+
 from time import sleep
+from random import randint
 
 client = cybw.BWAPIClient
 Broodwar = cybw.Broodwar
@@ -64,17 +67,17 @@ def drawVisibilityData():
                 else:
                     drawColor = cybw.Colors.Blue
             #used to test how many times this function was called
-            
+
             #its called alot but its supposed to fill map with dots of certain color
             #so it makes sense its called alot
             #drawDotMap is an overloaded function of Drawdot but drawdot is not in CYBW
             #so maybe thats why it doesnt work, not sure though since it seems to work
             #but after alot of calls it breaks.
-            
+
             Broodwar.drawDotMap(cybw.Position(x, y), drawColor)
 def combatDQN_input(squad_leader,bw):
     #takes combat squad leader unit and returns
-    
+
     number_of_enemy_units=0
     number_of_freindly_units=0
     closest_enemy=None
@@ -101,13 +104,13 @@ def combatDQN_input(squad_leader,bw):
     #print(closest_enemy)
     #print(total_enemy_Hitpoints)
     #print(number_of_freindly_units)
-    
+
     #Units own health
     own_health=squad_leader.getHitPoints()
     #print(own_health)
-    
+
     return number_of_enemy_units, number_of_freindly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,own_health
-    
+
 
 squad = Squad()
 
@@ -164,6 +167,8 @@ while True:
 
         events = Broodwar.getEvents()
         #print(len(events))
+
+    ctr = 101
 
     while Broodwar.isInGame():
         events = Broodwar.getEvents()
@@ -233,6 +238,16 @@ while True:
                 Broodwar << "The game was saved to " << e.getText() << "\n"
 
         squad.update(Broodwar, events)
+
+        if ctr > 100:
+            ctr = 0
+            xpos = randint(-500, 500)
+            ypos = randint(-500, 500)
+            print ("Shifting marines by (%d, %d)"%(xpos,ypos))
+            pos = Position(squad.center.getX()+xpos, squad.center.getY()+ypos)
+            squad.attackMove(pos)
+        else:
+            ctr += 1
 
         if show_bullets:
             drawBullets()
