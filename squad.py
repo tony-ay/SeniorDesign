@@ -63,6 +63,10 @@ class Squad:
                 self.current_units-=1
                 self.reward=-1
                 self.units.pop(iterator)
+                #if squad leader died change3 saud leader
+                if iterator==0:
+                    self.sqaud_leader=self.units[0]
+                
             iterator+=1
         #for e in events:
             #if e.getType() == cybw.EventType.UnitShow:
