@@ -81,7 +81,7 @@ def combatDQN_input(squad_leader,bw):
     number_of_enemy_units=0
     number_of_freindly_units=0
     closest_enemy=None
-    distance_to_enemy=999
+    distance_to_enemy=99999
     total_enemy_Hitpoints=0
     sett=squad_leader.getUnitsInRadius(squad_leader.getType().sightRange())
     for s in sett:
@@ -90,7 +90,7 @@ def combatDQN_input(squad_leader,bw):
             number_of_enemy_units+=1
             #distance to closest enemy
             tmp = squad_leader.getDistance(s)
-            if tmp<distance:
+            if tmp<distance_to_enemy:
                 distance_to_enemy=tmp
                 closest_enemy=s
             #total health of all enemy units in range
@@ -112,7 +112,7 @@ def combatDQN_input(squad_leader,bw):
     return number_of_enemy_units, number_of_freindly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,own_health
 
 
-squad = Squad()
+squad = Squad(1)
 
 print("Connecting...")
 reconnect()
@@ -248,7 +248,15 @@ while True:
             squad.attackMove(pos)
         else:
             ctr += 1
-
+        for e in events:
+            if e.getType() == cybw.EventType.UnitShow:
+                unit = e.getUnit()
+                if unit.getPlayer().getID() != Broodwar.self().getID():
+                    #for every squad
+                    number_of_enemy_units,number_of_freindly_units, distance_to_enemy,closest_enemy,total_enemy_Hitpoints,own_health=combatDQN_input(squad.squad_leader,Broodwar)
+                    #input to DQN for action(correct reward is implimented in sqaud update function)
+                    #DQN then decides to attack or retreat
+                    
         if show_bullets:
             drawBullets()
         if show_visibility_data:
