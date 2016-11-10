@@ -2,7 +2,7 @@ import cybw
 from cybw import Position
 
 from squad import Squad
-from DQN import DQN
+#from DQN import DQN
 
 from time import sleep
 from random import randint
@@ -85,6 +85,7 @@ def combatDQN_input(squad_leader,bw):
     total_enemy_Hitpoints=0
     total_friendly_Hitpoints=0
     sett=squad_leader.getUnitsInRadius(squad_leader.getType().sightRange())
+    total_enemies = []
     for s in sett:
         if s.getPlayer().getID() != bw.self().getID():
             #number of enemy units in range
@@ -97,6 +98,7 @@ def combatDQN_input(squad_leader,bw):
                 closest_enemy=s
             #total health of all enemy units in range
             total_enemy_Hitpoints+=s.getHitPoints()
+            total_enemies.append(s)
         if s.getPlayer().getID() == bw.self().getID():
             #number of friendly units in range
             number_of_friendly_units+=1
@@ -112,11 +114,11 @@ def combatDQN_input(squad_leader,bw):
     own_health=squad_leader.getHitPoints()
     #print(own_health)
 
-    return in_sight, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints,own_health
+    return in_sight, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints,own_health,total_enemies
 
 
 squad = Squad(1)
-Combatmodel= DQN('T')
+#Combatmodel= DQN('T')
 print("Connecting...")
 reconnect()
 while True:
@@ -239,7 +241,7 @@ while True:
                 Broodwar << "The game was saved to " << e.getText() << "\n"
 
         squad.update(Broodwar, events)
-
+        """
         if ctr > 100:
             ctr = 0
             xpos = randint(-500, 500)
@@ -249,13 +251,19 @@ while True:
             squad.attackMove(pos)
         else:
             ctr += 1
+        """
+        if ctr > 100:
+            squad.retreat(squad.getNearbyEnemies())
+            print (squad.center)
+        else:
+            ctr += 1
         #for e in events:
         #if e.getType() == cybw.EventType.UnitShow:
         #unit = e.getUnit()
         #if unit.getPlayer().getID() != Broodwar.self().getID():
-            
+        """
         #for every squad
-        in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health=combatDQN_input(squad.squad_leader,Broodwar)
+        in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad.squad_leader,Broodwar)
         #input to DQN for action(correct reward is implimented in sqaud update function)
         if in_sight:
             a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
@@ -264,7 +272,7 @@ while True:
         #retreat
         #else:
         #attack closest_enemy
-                    
+        """
         if show_bullets:
             drawBullets()
         if show_visibility_data:
