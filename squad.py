@@ -48,7 +48,17 @@ class Squad:
         return enemyPos
 
     def retreatFromPosition(self, position):
-        retreatPos = self.center - (position - self.center)
+        sight = self.squad_leader.getType().sightRange()
+        retreatVector = position - self.center
+        retreatVector = Position(2*retreatVector.getX(), 2*retreatVector.getY())
+        retreatPos = self.center - retreatVector
+        retreatVectorCheck = Position(retreatVector.getX(), retreatVector.getY())
+        if self.center.getX() < sight or self.center.getX() > cybw.Broodwar.mapWidth() - sight:
+            retreatVectorCheck = Position(-1*retreatVector.getX(), retreatVector.getY())
+        if self.center.getY() < sight or self.center.getY() > cybw.Broodwar.mapHeight() - sight:
+            retreatVectorCheck = Position(retreatVector.getX(), -1*retreatVector.getY())
+        if retreatVectorCheck.getX() != retreatVector.getX() or retreatVectorCheck.getY() != retreatVector.getY():
+            retreatPos = self.center - retreatVectorCheck
         self.move(retreatPos)
 
     def retreat(self, enemies):
@@ -79,7 +89,7 @@ class Squad:
             self.center += unit.getPosition()
         self.center /= len(self.units)
         
-    def update(self, bw, events):
+    def update(self, events):
         self.updateCenter()
         self.reward=0.01
         iterator=0
@@ -97,8 +107,3 @@ class Squad:
                     self.sqaud_leader=self.units[0]
                 
             iterator+=1
-        #for e in events:
-            #if e.getType() == cybw.EventType.UnitShow:
-                #unit = e.getUnit()
-                #if unit.getPlayer().getID() != bw.self().getID():
-                    #bw << "Enemy unit " << unit << " spotted" << "\n"
