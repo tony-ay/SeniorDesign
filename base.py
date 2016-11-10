@@ -240,7 +240,7 @@ while True:
             elif eventtype == cybw.EventType.SaveGame:
                 Broodwar << "The game was saved to " << e.getText() << "\n"
 
-        squad.update(Broodwar, events)
+        squad.update(events)
         """
         if ctr > 100:
             ctr = 0
@@ -252,7 +252,8 @@ while True:
         else:
             ctr += 1
         """
-        if ctr > 100:
+        if ctr > 20:
+            ctr = 0
             squad.retreat(squad.getNearbyEnemies())
             print (squad.center)
         else:
