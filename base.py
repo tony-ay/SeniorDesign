@@ -117,7 +117,6 @@ def combatDQN_input(squad_leader,bw):
     return in_sight, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints,own_health,total_enemies
 
 
-squad = Squad(1)
 #Combatmodel= DQN('T')
 print("Connecting...")
 reconnect()
@@ -131,6 +130,8 @@ while True:
     print("starting match!")
     Broodwar.sendText( "Hello world from python!")
     Broodwar.printf( "Hello world from python!")
+
+    squad = Squad(1)
 
     # need newline to flush buffer
     Broodwar << "The map is " << Broodwar.mapName() << ", a " \
@@ -241,7 +242,7 @@ while True:
                 Broodwar << "The game was saved to " << e.getText() << "\n"
 
         squad.update(events)
-        """
+        
         if ctr > 100:
             ctr = 0
             xpos = randint(-500, 500)
@@ -258,6 +259,7 @@ while True:
             print (squad.center)
         else:
             ctr += 1
+        """
         #for e in events:
         #if e.getType() == cybw.EventType.UnitShow:
         #unit = e.getUnit()

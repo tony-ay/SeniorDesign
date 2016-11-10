@@ -52,13 +52,6 @@ class Squad:
         retreatVector = position - self.center
         retreatVector = Position(2*retreatVector.getX(), 2*retreatVector.getY())
         retreatPos = self.center - retreatVector
-        retreatVectorCheck = Position(retreatVector.getX(), retreatVector.getY())
-        if self.center.getX() < sight or self.center.getX() > cybw.Broodwar.mapWidth() - sight:
-            retreatVectorCheck = Position(-1*retreatVector.getX(), retreatVector.getY())
-        if self.center.getY() < sight or self.center.getY() > cybw.Broodwar.mapHeight() - sight:
-            retreatVectorCheck = Position(retreatVector.getX(), -1*retreatVector.getY())
-        if retreatVectorCheck.getX() != retreatVector.getX() or retreatVectorCheck.getY() != retreatVector.getY():
-            retreatPos = self.center - retreatVectorCheck
         self.move(retreatPos)
 
     def retreat(self, enemies):
