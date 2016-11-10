@@ -13,6 +13,7 @@ class Squad:
         self.squad_number=squad_num
         self.reward=0.01
         self.killCounts=[]
+
     def add(self, unit):
         if self.squad_leader==None:
             self.squad_leader=unit
@@ -30,10 +31,38 @@ class Squad:
         else:
             print("To many units in squad %d"%self.squad_number)
 
+    def getNearbyEnemies(self):
+        enemies = []
+        nearby = self.squad_leader.getUnitsInRadius(self.squad_leader.getType().sightRange())
+        for e in nearby:
+            if e.getPlayer().getID() != self.squad_leader.getPlayer().getID():
+                enemies.append(e)
+        return enemies
+
+    def getEnemyPosition(self, enemies):
+        enemyPos = self.center
+        if len(enemies) > 0:
+            for e in enemies:
+                enemyPos += e.getPosition()
+            enemyPos /= len(enemies)
+        return enemyPos
+
+    def retreatFromPosition(self, position):
+        retreatPos = self.center - (position - self.center)
+        self.move(retreatPos)
+
+    def retreat(self, enemies):
+        enemyPos = self.getEnemyPosition(enemies)
+        self.retreatFromPosition(enemyPos)
+
     def getPosShift(self, position):
         xshift = self.center.getX() - position.getX()
         yshift = self.center.getY() - position.getY()
         return (xshift, yshift)
+
+    def move(self, position):
+        for unit in self.units:
+            unit.move(position)
 
     def attackMove(self, position):
         print(position)

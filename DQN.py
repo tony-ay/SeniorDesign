@@ -86,8 +86,8 @@ class DQN:
         self.action_index = 0
         self.r_t = 0
         
-    def trainNetwork(self, reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health):
-        DQNinput=[number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints, own_health]
+    def trainNetwork(self, reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies):
+        DQNinput=[number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints, own_health, total_enemies]
         loss = 0
         q = self.model.predict(self.s_t) #input a stack of 4 images, get the prediction
         a_t = np.zeros([self.ACTIONS])
