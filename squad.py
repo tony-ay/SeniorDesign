@@ -48,7 +48,9 @@ class Squad:
         return enemyPos
 
     def retreatFromPosition(self, position):
-        retreatPos = self.center - (position - self.center)
+        retreatVector = position - self.center
+        retreatVector = Position(2*retreatVector.getX(), 2*retreatVector.getY())
+        retreatPos = self.center - retreatVector
         self.move(retreatPos)
 
     def retreat(self, enemies):
