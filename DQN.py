@@ -86,17 +86,18 @@ class DQN:
         self.action_index = 0
         self.r_t = 0
         
-    def trainNetwork(self, reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies):
-        DQNinput=[number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints, own_health, total_enemies]
+    def trainNetwork(self, reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health):
+        DQNinput=[number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health]
         loss = 0
         q = self.model.predict(self.s_t) #input a stack of 4 images, get the prediction
         a_t = np.zeros([self.ACTIONS])
         #choose an action epsilon greedy
         if self.t % self.FRAME_PER_ACTION == 0:
             if random.random() <= self.epsilon:
-                print("----------Random Action----------")
+                #print("----------Random Action----------")
                 action_index = random.randrange(self.ACTIONS)
                 a_t[action_index] = 1
+               
             else:      
                 action_index = np.argmax(q)
                 a_t[action_index] = 1
@@ -177,9 +178,10 @@ class DQN:
             state = "explore"
         else:
             state = "train"
-
+        '''
         print("TIMESTEP", self.t, "/ STATE", state, \
             "/ EPSILON", self.epsilon, "/ ACTION", action_index, "/ REWARD", self.r_t, \
             "/ Q_MAX " , np.max(q), "/ Loss ", loss)
+        '''
         return a_t
 
