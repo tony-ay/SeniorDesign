@@ -9,33 +9,29 @@ class Squad:
         self.Max_units=4
         self.current_units=0
         self.old_current_units=0
-        self.squad_leader=None
+        self.squad_leader=0
         self.squad_number=squad_num
         self.reward=0.01
         self.killCounts=[]
+        self.status=[]
 
     def add(self, unit):
-        if self.squad_leader==None:
-            self.squad_leader=unit
+        if self.current_units<self.Max_units:
             self.units.append(unit)
             self.killCounts.append(0)
+            self.status.append(1)
             self.updateCenter()
             self.current_units+=1
             self.old_current_units+=1
-        elif self.current_units<self.Max_units:
-            self.units.append(unit)
-            self.killCounts.append(0)
-            self.updateCenter()
-            self.current_units+=1
-            self.old_current_units+=1
+            print(self.units)
         else:
             print("To many units in squad %d"%self.squad_number)
 
     def getNearbyEnemies(self):
         enemies = []
-        nearby = self.squad_leader.getUnitsInRadius(self.squad_leader.getType().sightRange())
+        nearby = self.units[self.squad_leader].getUnitsInRadius(self.units[self.squad_leader].getType().sightRange())
         for e in nearby:
-            if e.getPlayer().getID() != self.squad_leader.getPlayer().getID():
+            if e.getPlayer().getID() != self.units[self.squad_leader].getPlayer().getID():
                 enemies.append(e)
         return enemies
 
@@ -48,7 +44,7 @@ class Squad:
         return enemyPos
 
     def retreatFromPosition(self, position):
-        sight = self.squad_leader.getType().sightRange()
+        sight = self.units[self.squad_leader].getType().sightRange()
         retreatVector = position - self.center
         retreatVector = Position(2*retreatVector.getX(), 2*retreatVector.getY())
         retreatPos = self.center - retreatVector
@@ -68,7 +64,7 @@ class Squad:
             unit.move(position)
 
     def attackMove(self, position):
-        print(position)
+        #print(position)
         for unit in  self.units:
             unit.attack(position)
 
@@ -80,23 +76,38 @@ class Squad:
         self.center = Position(0,0)
         for unit in self.units:
             self.center += unit.getPosition()
-        self.center /= len(self.units)
-        
+        if self.current_units>0:
+            self.center /= len(self.units)
+            
     def update(self, events):
-        self.updateCenter()
+        
         self.reward=0.01
         iterator=0
         for unit in self.units:
-            if unit.getKillCount()>self.killCounts[iterator]:
+            #print(iterator)
+            if not unit.exists() and self.status[iterator]==1:
+                self.status[iterator]=0
+                #if squad leader died change sqaud leader
+                if unit== self.units[self.squad_leader]:
+                    print(self.units[self.squad_leader])
+                    iters=0
+                    for s in self.units:
+                        #print(s)
+                        if s.exists():
+                            #print(iters)
+                            #print(self.squad_leader)
+                            self.squad_leader=iters
+                            #print(self.squad_leader)
+                            break
+                        iters+=1
+                    print(self.units[self.squad_leader])     
+                self.current_units-=1
+                self.reward=-1
+            elif unit.getKillCount()>self.killCounts[iterator]:
                 self.killCounts[iterator]= unit.getKillCount()
                 self.reward=1
                 print("Unit %d got a kill"%iterator)
-            if unit.getHitPoints()<=0:
-                self.current_units-=1
-                self.reward=-1
-                self.units.pop(iterator)
-                #if squad leader died change3 saud leader
-                if iterator==0:
-                    self.sqaud_leader=self.units[0]
-                
+            
             iterator+=1
+        self.updateCenter()
+   
