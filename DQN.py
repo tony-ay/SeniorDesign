@@ -23,7 +23,7 @@ class DQN:
         
         GAME = 'bird' # the name of the game being played for log files
         CONFIG = 'nothreshold'
-        self.ACTIONS = 2 # number of valid actions
+        self.ACTIONS = 3 # number of valid actions
         self.GAMMA = 0.99 # decay rate of past observations
         self.OBSERVATION = 10000. # timesteps to observe before training
         self.EXPLORE = 3000000. # frames over which to anneal epsilon
@@ -94,13 +94,16 @@ class DQN:
         #choose an action epsilon greedy
         if self.t % self.FRAME_PER_ACTION == 0:
             if random.random() <= self.epsilon:
-                #print("----------Random Action----------")
+                print("----------Random Action----------")
                 action_index = random.randrange(self.ACTIONS)
                 a_t[action_index] = 1
+                print(action_index)
                
-            else:      
+            else:
+                print("----------Action----------")
                 action_index = np.argmax(q)
                 a_t[action_index] = 1
+                print(action_index)
         else:
             a_t[0] = 1 # do nothing
 
