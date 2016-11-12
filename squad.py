@@ -98,7 +98,7 @@ class Squad:
                             #print(self.squad_leader)
                             self.squad_leader=iters
                             #print(self.squad_leader)
-                            break
+                            continue
                         iters+=1
                     print(self.units[self.squad_leader])     
                 self.current_units-=1

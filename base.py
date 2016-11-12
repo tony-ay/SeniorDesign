@@ -258,13 +258,17 @@ while True:
             a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
             #DQN then decides to attack or retreat
             if a_t[0]==1:
+                #attack closest_enemy
+                #print("Here")
+                squad.attackMove(closest_enemy.getPosition())     
+            elif a_t[1]==1:
                 #retreat
-                print("Not Here")
+                #print("Not Here")
                 squad.retreat(squad.getNearbyEnemies())
             else:
-                #attack closest_enemy
-                print("Here")
-                squad.attackMove(closest_enemy.getPosition())
+                #do nothing
+                print("do nothing")
+                
                 
         if ctr > 100 and not in_sight:
             ctr = 0
@@ -273,10 +277,9 @@ while True:
             print ("Shifting marines by (%d, %d)"%(xpos,ypos))
             pos = Position(squad.center.getX()+xpos, squad.center.getY()+ypos)
             squad.move(pos)
-        else:
-            ctr += 1
-            if in_sight and ctr > 101:
-                ctr = 0
+        
+        ctr += 1
+        
             
         """
         if ctr > 100:
