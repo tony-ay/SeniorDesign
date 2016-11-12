@@ -1,6 +1,26 @@
 import cybw
 from cybw import Position
 
+class Vec2:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def __add__(self, vec):
+        return Vec2(self.x + vec.x, self.y + vec.y)
+
+    def __sub__(self, vec):
+        return Vec2(self.x - vec.x, self.y - vec.y)
+
+    def __mul__(self, vec):
+        return Vec2(self.x * vec.x, self.y * vec.y)
+
+    def __div__(self, vec):
+        return Vec2(self.x * vec.x, self.y * vec.y)
+
+    def getPosition(self):
+        return Position(self.x, self.y)
+
 # squad class
 class Squad:
     def __init__(self,squad_num):
@@ -35,18 +55,51 @@ class Squad:
         return enemies
 
     def getEnemyPosition(self, enemies):
-        enemyPos = self.center
+        enemyPos = Position(0,0)
         if len(enemies) > 0:
             for e in enemies:
                 enemyPos += e.getPosition()
             enemyPos /= len(enemies)
-        return enemyPos
+            return enemyPos
+        else:
+            return self.center
 
     def retreatFromPosition(self, position):
-        sight = self.units[self.squad_leader].getType().sightRange()
-        retreatVector = position - self.center
-        retreatVector = Position(2*retreatVector.getX(), 2*retreatVector.getY())
-        retreatPos = self.center - retreatVector
+        edge = self.units[self.squad_leader].getType().sightRange()
+
+        retreatVector = self.center - position
+        retreatVector *= 2
+        
+        left, right, upper, lower = False, False, False, False
+        mw = cybw.Broodwar.mapWidth()*32
+        mh = cybw.Broodwar.mapHeight()*32
+        shift = 500
+        print("squad pos: ")
+        print(self.center)
+        if self.center.getX() < edge:
+            left = True
+            print("on left edge")
+        elif self.center.getX() > mw - edge:
+            right = True
+            print("on right edge")
+        if self.center.getY() < edge:
+            upper = True
+            print("on upper edge")
+        elif self.center.getY() > mh - edge:
+            lower = True
+            print("on lower edge")
+
+        if upper:
+            retreatVector.setX(shift)
+        elif lower:
+            retreatVector.setX(-shift)
+        if left:
+            retreatVector.setY(-shift)
+        elif right:
+            retreatVector.setY(shift)
+
+        print("-----")
+        retreatPos = self.center + retreatVector
         self.move(retreatPos)
 
     def retreat(self, enemies):
@@ -75,7 +128,7 @@ class Squad:
         self.center = Position(0,0)
         for unit in self.units:
             self.center += unit.getPosition()
-        if self.current_units>0:
+        if len(self.units)>0:
             self.center /= len(self.units)
             
     def update(self, events):
