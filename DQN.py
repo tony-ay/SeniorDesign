@@ -97,13 +97,13 @@ class DQN:
                 print("----------Random Action----------")
                 action_index = random.randrange(self.ACTIONS)
                 a_t[action_index] = 1
-                print(action_index)
+                #print(action_index)
                
             else:
-                print("----------Action----------")
+                #print("----------Action----------")
                 action_index = np.argmax(q)
                 a_t[action_index] = 1
-                print(action_index)
+                #print(action_index)
         else:
             a_t[0] = 1 # do nothing
 
@@ -181,10 +181,10 @@ class DQN:
             state = "explore"
         else:
             state = "train"
-        '''
+        
         print("TIMESTEP", self.t, "/ STATE", state, \
             "/ EPSILON", self.epsilon, "/ ACTION", action_index, "/ REWARD", self.r_t, \
             "/ Q_MAX " , np.max(q), "/ Loss ", loss)
-        '''
+        
         return a_t
 
