@@ -2,7 +2,7 @@ import cybw
 from cybw import Position
 
 from squad import Squad
-from DQN import DQN
+#from DQN import DQN
 
 from time import sleep
 from random import randint
@@ -118,7 +118,7 @@ def combatDQN_input(squad_leader,bw):
     return in_sight, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints,own_health,total_enemies
 
 
-Combatmodel= DQN('T')
+#Combatmodel= DQN('T')
 
 print("Connecting...")
 reconnect()
@@ -254,6 +254,7 @@ while True:
         #for every squad
         in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad.units[squad.squad_leader],Broodwar)
         #input to DQN for action(correct reward is implimented in sqaud update function)
+        """
         if in_sight:
             a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
             #DQN then decides to attack or retreat
@@ -268,8 +269,9 @@ while True:
             else:
                 #do nothing
                 print("do nothing")
+        """
                 
-                
+        """
         if ctr > 100 and not in_sight:
             ctr = 0
             xpos = randint(-500, 500)
@@ -282,13 +284,16 @@ while True:
         
             
         """
-        if ctr > 100:
+        if ctr > 5:
             ctr = 0
             squad.retreat(squad.getNearbyEnemies())
-            print (squad.center)
         else:
             ctr += 1
-        """
+        
+
+        screen_pos = squad.center - Position(320, 240)
+        Broodwar.setScreenPosition(screen_pos)
+
         if show_bullets:
             drawBullets()
         if show_visibility_data:
