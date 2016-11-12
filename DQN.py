@@ -6,6 +6,7 @@ import random
 import numpy as np
 from collections import deque
 
+import json
 from keras import initializations
 from keras.initializations import normal, identity
 from keras.models import model_from_json
@@ -72,11 +73,11 @@ class DQN:
         self.s_t1=self.s_t
         if TorR== 'R':
             self.OBSERVE = 999999999    #We keep observe, never train
-            self.epsilon = FINAL_EPSILON
+            self.epsilon = self.FINAL_EPSILON
             print ("Now we load weight")
             self.model.load_weights("model.h5")
             self.adam = Adam(lr=1e-6)
-            self.model.compile(loss='mse',optimizer=adam)
+            self.model.compile(loss='mse',optimizer=self.adam)
             print ("Weight load successfully")    
         else:                       #We go to training mode
             self.OBSERVE = self.OBSERVATION
@@ -151,13 +152,13 @@ class DQN:
 
                 inputs[i:i + 1] = state_t    #I saved down s_t
 
-                targets[i] = model.predict(state_t)  # Hitting each buttom probability
-                Q_sa = model.predict(state_t1)
+                targets[i] = self.model.predict(state_t)  # Hitting each buttom probability
+                Q_sa = self.model.predict(state_t1)
 
                 if reward_t<=0.1:
                     targets[i, action_t] = reward_t
                 else:
-                    targets[i, action_t] = reward_t + GAMMA * np.max(self.Q_sa)
+                    targets[i, action_t] = reward_t + self.GAMMA * np.max(self.Q_sa)
 
             # targets2 = normalize(targets)
             loss += self.model.train_on_batch(inputs, targets)
@@ -168,9 +169,9 @@ class DQN:
         # save progress every 10000 iterations
         if self.t % 10000 == 0:
             print("Now we save model")
-            model.save_weights("model.h5", overwrite=True)
+            self.model.save_weights("model.h5", overwrite=True)
             with open("model.json", "w") as outfile:
-                json.dump(model.to_json(), outfile)
+                json.dump(self.model.to_json(), outfile)
 
 
         # print info
