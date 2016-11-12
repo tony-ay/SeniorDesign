@@ -13,13 +13,12 @@ class Squad:
         self.squad_number=squad_num
         self.reward=0.01
         self.killCounts=[]
-        self.status=[]
+        
 
     def add(self, unit):
         if self.current_units<self.Max_units:
             self.units.append(unit)
             self.killCounts.append(0)
-            self.status.append(1)
             self.updateCenter()
             self.current_units+=1
             self.old_current_units+=1
@@ -85,22 +84,26 @@ class Squad:
         iterator=0
         for unit in self.units:
             #print(iterator)
-            if not unit.exists() and self.status[iterator]==1:
-                self.status[iterator]=0
-                #if squad leader died change sqaud leader
-                if unit== self.units[self.squad_leader]:
-                    print(self.units[self.squad_leader])
-                    iters=0
-                    for s in self.units:
-                        #print(s)
-                        if s.exists():
-                            #print(iters)
-                            #print(self.squad_leader)
-                            self.squad_leader=iters
-                            #print(self.squad_leader)
-                            continue
-                        iters+=1
-                    print(self.units[self.squad_leader])     
+            if not unit.exists() :
+                #if list has somethhing in it
+                if len(self.units)>1:
+                    #if squad leader died change sqaud leader
+                    if unit== self.units[self.squad_leader] :
+                        print(self.units[self.squad_leader])
+                        self.units.remove(unit)
+                        iters=0
+                        for s in self.units:
+                            #print(s)
+                            if s.exists():
+                                #print(iters)
+                                #print(self.squad_leader)
+                                self.squad_leader=iters
+                                #print(self.squad_leader)
+                                break
+                            iters+=1
+                        print(self.units[self.squad_leader])
+                    else:
+                        self.units.remove(unit)
                 self.current_units-=1
                 self.reward=-1
             elif unit.getKillCount()>self.killCounts[iterator]:
