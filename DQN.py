@@ -26,7 +26,7 @@ class DQN:
         CONFIG = 'nothreshold'
         self.ACTIONS = 3 # number of valid actions
         self.GAMMA = 0.99 # decay rate of past observations
-        self.OBSERVATION = 100. # timesteps to observe before training
+        self.OBSERVATION = 10000. # timesteps to observe before training
         self.EXPLORE = 3000000. # frames over which to anneal epsilon
         self.FINAL_EPSILON = 0.0001 # final value of epsilon
         self.INITIAL_EPSILON = 0.1 # starting value of epsilon
@@ -167,7 +167,7 @@ class DQN:
         self.t = self.t + 1
     
         # save progress every 10000 iterations
-        if self.t % 100000 == 0:
+        if self.t % 10000 == 0:
             print("Now we save model")
             self.model.save_weights("model.h5", overwrite=True)
             with open("model.json", "w") as outfile:
