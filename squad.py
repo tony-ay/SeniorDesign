@@ -1,6 +1,8 @@
 import cybw
 from cybw import Position
 
+from random import randint
+
 class Vec2:
     def __init__(self, x, y):
         self.x = x
@@ -70,33 +72,22 @@ class Squad:
         retreatVector = self.center - position
         retreatVector *= 2
         
-        left, right, upper, lower = False, False, False, False
         mw = cybw.Broodwar.mapWidth()*32
         mh = cybw.Broodwar.mapHeight()*32
         shift = 500
-        print("squad pos: ")
-        print(self.center)
+        print("squad pos: " + str(self.center))
         if self.center.getX() < edge:
-            left = True
+            retreatVector.setY(-shift)
             print("on left edge")
         elif self.center.getX() > mw - edge:
-            right = True
+            retreatVector.setY(shift)
             print("on right edge")
         if self.center.getY() < edge:
-            upper = True
+            retreatVector.setX(shift)
             print("on upper edge")
         elif self.center.getY() > mh - edge:
-            lower = True
-            print("on lower edge")
-
-        if upper:
-            retreatVector.setX(shift)
-        elif lower:
             retreatVector.setX(-shift)
-        if left:
-            retreatVector.setY(-shift)
-        elif right:
-            retreatVector.setY(shift)
+            print("on lower edge")
 
         print("-----")
         retreatPos = self.center + retreatVector
@@ -123,6 +114,12 @@ class Squad:
     def attackShift(self, shift):
         for unit in  self.units:
             unit.attack(Position(shift[0] + unit.getPosition().getX(), shift[1] + unit.getPosition().getY()))
+
+    def explore(self):
+        amt = 1000
+        shift = Position(randint(-amt, amt), randint(-amt, amt))
+        pos = self.center + shift
+        self.move(pos)
 
     def updateCenter(self):
         self.center = Position(0,0)

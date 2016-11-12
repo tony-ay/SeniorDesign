@@ -270,17 +270,13 @@ while True:
                 #do nothing
                 print("do nothing")
         """
-                
-        """
-        if ctr > 100 and not in_sight:
-            ctr = 0
-            xpos = randint(-500, 500)
-            ypos = randint(-500, 500)
-            print ("Shifting marines by (%d, %d)"%(xpos,ypos))
-            pos = Position(squad.center.getX()+xpos, squad.center.getY()+ypos)
-            squad.move(pos)
+           
         
-        ctr += 1
+        if ctr > 250:
+            ctr = 0
+            squad.explore()
+        else:
+            ctr += 1
         
             
         """
@@ -289,7 +285,7 @@ while True:
             squad.retreat(squad.getNearbyEnemies())
         else:
             ctr += 1
-        
+        """
 
         screen_pos = squad.center - Position(320, 240)
         Broodwar.setScreenPosition(screen_pos)
