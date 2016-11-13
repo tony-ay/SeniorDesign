@@ -75,21 +75,21 @@ class Squad:
         mw = cybw.Broodwar.mapWidth()*32
         mh = cybw.Broodwar.mapHeight()*32
         shift = 500
-        print("squad pos: " + str(self.center))
+        #print("squad pos: " + str(self.center))
         if self.center.getX() < edge:
             retreatVector.setY(-shift)
-            print("on left edge")
+            #print("on left edge")
         elif self.center.getX() > mw - edge:
             retreatVector.setY(shift)
-            print("on right edge")
+            #print("on right edge")
         if self.center.getY() < edge:
             retreatVector.setX(shift)
-            print("on upper edge")
+            #print("on upper edge")
         elif self.center.getY() > mh - edge:
             retreatVector.setX(-shift)
-            print("on lower edge")
+            #print("on lower edge")
 
-        print("-----")
+        #print("-----")
         retreatPos = self.center + retreatVector
         self.move(retreatPos)
 
