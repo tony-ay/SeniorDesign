@@ -125,7 +125,7 @@ TYPE='T'
 
 # 0 : Runs DQN only when in combat
 # 1 : Runs DQN at all times
-DQNVER=1
+DQNVER=0
 
 
 
