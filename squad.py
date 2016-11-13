@@ -85,15 +85,6 @@ class Squad:
         elif self.center.getY() > mh - edge:
             retreatVector.setX(-shift)
 
-        if self.center.getX() < edge:
-            retreatVector.setY(-shift)
-        elif self.center.getX() > mw - edge:
-            retreatVector.setY(shift)
-        if self.center.getY() < edge:
-            retreatVector.setX(shift)
-        elif self.center.getY() > mh - edge:
-            retreatVector.setX(-shift)
-
         retreatPos = self.center + retreatVector
         self.move(retreatPos)
 
