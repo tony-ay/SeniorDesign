@@ -16,15 +16,45 @@ from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD , Adam
 
 
+def load_weights(model,Version,adam):
+    if Version==0:
+        print ("Now we load weight")
+        model.load_weights("model_1.h5")
+        adam = Adam(lr=1e-6)
+        model.compile(loss='mse',optimizer=adam)
+        print ("Weight load successfully")
 
+    elif Version==1:
+        print ("Now we load weight")
+        model.load_weights("model_2.h5")
+        adam = Adam(lr=1e-6)
+        model.compile(loss='mse',optimizer=adam)
+        print ("Weight load successfully")
+    return adam
+
+def save_weights(model,Version):
+    if Version==0:
+        print("Now we save model")
+        model.save_weights("model_1.h5", overwrite=True)
+        with open("model_1.json", "w") as outfile:
+            json.dump(model.to_json(), outfile)
+    elif Version==1:
+        print("Now we save model")
+        model.save_weights("model_2.h5", overwrite=True)
+        with open("model_2.json", "w") as outfile:
+            json.dump(model.to_json(), outfile)
+            
 class DQN:
-    def __init__(self,TorR):
+    def __init__(self,TorR,Version):
 
 
         
         GAME = 'bird' # the name of the game being played for log files
         CONFIG = 'nothreshold'
-        self.ACTIONS = 3 # number of valid actions
+        if Version==0:
+            self.ACTIONS = 3 # number of valid actions
+        elif Version==1:
+            self.ACTIONS = 4 # number of valid actions
         self.GAMMA = 0.99 # decay rate of past observations
         self.OBSERVATION = 10000. # timesteps to observe before training
         self.EXPLORE = 3000000. # frames over which to anneal epsilon
@@ -36,7 +66,7 @@ class DQN:
         self.ARRAY_COL=6 #Number of Columns in DQN
         self.ARRAY_ROW=6 #Number of Rows in DQN
         self.INPUTS=6 #Number of inputs for DQN
-
+        self.VERSION=Version
 
         
         print("Now we build the model")
@@ -74,12 +104,12 @@ class DQN:
         if TorR== 'R':
             self.OBSERVE = 999999999    #We keep observe, never train
             self.epsilon = self.FINAL_EPSILON
-            print ("Now we load weight")
-            self.model.load_weights("model.h5")
-            self.adam = Adam(lr=1e-6)
-            self.model.compile(loss='mse',optimizer=self.adam)
-            print ("Weight load successfully")    
-        else:                       #We go to training mode
+            self.adam=load_weights(self.model,self.VERSION,self.adam)
+        elif TorR=='RT':                #We load wights but continue training
+            self.OBSERVE = self.OBSERVATION
+            self.epsilon = self.INITIAL_EPSILON
+            self.adam=load_weights(self.model,self.VERSION,self.adam)
+        else:                           #We go to training mode
             self.OBSERVE = self.OBSERVATION
             self.epsilon = self.INITIAL_EPSILON
         self.t = 0
@@ -168,10 +198,7 @@ class DQN:
     
         # save progress every 10000 iterations
         if self.t % 10000 == 0:
-            print("Now we save model")
-            self.model.save_weights("model.h5", overwrite=True)
-            with open("model.json", "w") as outfile:
-                json.dump(self.model.to_json(), outfile)
+            save_weights(self.model,self.VERSION)
 
 
         # print info
@@ -188,4 +215,6 @@ class DQN:
             "/ Q_MAX " , np.max(q), "/ Loss ", loss)
         
         return a_t
+
+    
 

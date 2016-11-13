@@ -2,7 +2,7 @@ import cybw
 from cybw import Position
 
 from squad import Squad
-#from DQN import DQN
+from DQN import DQN
 
 from time import sleep
 from random import randint
@@ -118,7 +118,21 @@ def combatDQN_input(squad_leader,bw):
     return in_sight, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints,own_health,total_enemies
 
 
-#Combatmodel= DQN('T')
+#'?' : (Any character) To train the network from scratch(will overwrite any previous save points)
+#'RT': To train the network from last save point(explore,observation,and epsilon reset)
+#'R' : To run network with out training or resetting save points
+TYPE='RT'
+
+# 0 : Runs DQN only when in combat
+# 1 : Runs DQN at all times
+DQNVER=1
+
+
+
+
+if DQNVER==0 or DQNVER==1:
+    Combatmodel= DQN(TYPE,DQNVER)
+
 
 print("Connecting...")
 reconnect()
@@ -174,7 +188,7 @@ while True:
         events = Broodwar.getEvents()
         #print(len(events))
 
-    ctr = 101
+    ctr = 200
 
     while Broodwar.isInGame():
         events = Broodwar.getEvents()
@@ -254,31 +268,45 @@ while True:
         #for every squad
         in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad.units[squad.squad_leader],Broodwar)
         #input to DQN for action(correct reward is implimented in sqaud update function)
-        """
-        if in_sight:
+        if DQNVER==0:
+            if in_sight:
+                a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
+                #DQN then decides to attack or retreat
+                if a_t[0]==1:
+                    #attack closest_enemy
+                    #print("Here")
+                    squad.attackMove(closest_enemy.getPosition())     
+                elif a_t[1]==1:
+                    #retreat
+                    #print("Not Here")
+                    squad.retreat(squad.getNearbyEnemies())
+                else:
+                    #do nothing
+                    print("do nothing")
+        
+        
+            if ctr > 250:
+                ctr = 0
+                squad.explore()
+            else:
+                ctr += 1
+        elif DQNVER==1:
             a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
-            #DQN then decides to attack or retreat
             if a_t[0]==1:
                 #attack closest_enemy
-                #print("Here")
-                squad.attackMove(closest_enemy.getPosition())     
+                if in_sight:
+                    squad.attackMove(closest_enemy.getPosition())     
             elif a_t[1]==1:
                 #retreat
-                #print("Not Here")
                 squad.retreat(squad.getNearbyEnemies())
+            elif a_t[2]==1:
+                #explore
+                squad.explore()
             else:
                 #do nothing
                 print("do nothing")
-        """
-           
-        
-        if ctr > 250:
-            ctr = 0
-            squad.explore()
         else:
-            ctr += 1
-        
-            
+            print("Inproper DQNVER input")
         """
         if ctr > 5:
             ctr = 0
