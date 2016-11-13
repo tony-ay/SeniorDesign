@@ -121,7 +121,7 @@ def combatDQN_input(squad_leader,bw):
 #'?' : (Any character) To train the network from scratch(will overwrite any previous save points)
 #'RT': To train the network from last save point(explore,observation,and epsilon reset)
 #'R' : To run network with out training or resetting save points
-TYPE='RT'
+TYPE='T'
 
 # 0 : Runs DQN only when in combat
 # 1 : Runs DQN at all times

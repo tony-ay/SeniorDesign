@@ -56,7 +56,7 @@ class DQN:
         elif Version==1:
             self.ACTIONS = 4 # number of valid actions
         self.GAMMA = 0.99 # decay rate of past observations
-        self.OBSERVATION = 10000. # timesteps to observe before training
+        self.OBSERVATION = 100. # timesteps to observe before training
         self.EXPLORE = 3000000. # frames over which to anneal epsilon
         self.FINAL_EPSILON = 0.0001 # final value of epsilon
         self.INITIAL_EPSILON = 0.1 # starting value of epsilon
@@ -197,7 +197,7 @@ class DQN:
         self.t = self.t + 1
     
         # save progress every 10000 iterations
-        if self.t % 10000 == 0:
+        if self.t % 100 == 0:
             save_weights(self.model,self.VERSION)
 
 

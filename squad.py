@@ -35,7 +35,7 @@ class Squad:
         self.squad_number=squad_num
         self.reward=0.01
         self.killCounts=[]
-        
+        self.last_squad_leader=True
 
     def add(self, unit):
         if self.current_units<self.Max_units:
@@ -149,8 +149,13 @@ class Squad:
                         print(self.units[self.squad_leader])
                     else:
                         self.units.remove(unit)
-                self.current_units-=1
-                self.reward=-1
+                
+                    self.current_units-=1
+                    self.reward=-1
+                elif len(self.units)==1 :
+                    if self.last_squad_leader:
+                        self.last_squad_leader=False
+                        self.reward=-1
             elif unit.getKillCount()>self.killCounts[iterator]:
                 self.killCounts[iterator]= unit.getKillCount()
                 self.reward=1
