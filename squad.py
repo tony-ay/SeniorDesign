@@ -31,14 +31,22 @@ class Squad:
         self.Max_units=4
         self.current_units=0
         self.old_current_units=0
-        self.squad_leader=0
+        self.squad_leader=None
         self.squad_number=squad_num
         self.reward=0.01
         self.killCounts=[]
         self.last_squad_leader=True
 
     def add(self, unit):
-        if self.current_units<self.Max_units:
+        if self.squad_leader==None:
+            self.units.append(unit)
+            self.squad_leader=unit
+            self.killCounts.append(0)
+            self.updateCenter()
+            self.current_units+=1
+            self.old_current_units+=1
+            print(self.units)
+        elif self.current_units<self.Max_units:
             self.units.append(unit)
             self.killCounts.append(0)
             self.updateCenter()
@@ -50,9 +58,9 @@ class Squad:
 
     def getNearbyEnemies(self):
         enemies = []
-        nearby = self.units[self.squad_leader].getUnitsInRadius(self.units[self.squad_leader].getType().sightRange())
+        nearby = self.squad_leader.getUnitsInRadius(self.squad_leader.getType().sightRange())
         for e in nearby:
-            if e.getPlayer().getID() != self.units[self.squad_leader].getPlayer().getID():
+            if e.getPlayer().getID() != self.squad_leader.getPlayer().getID():
                 enemies.append(e)
         return enemies
 
@@ -67,7 +75,7 @@ class Squad:
             return self.center
 
     def retreatFromPosition(self, position):
-        edge = self.units[self.squad_leader].getType().sightRange()
+        edge =self.squad_leader.getType().sightRange()
 
         retreatVector = self.center - position
         retreatVector *= 2
@@ -133,20 +141,15 @@ class Squad:
                 #if list has somethhing in it
                 if len(self.units)>1:
                     #if squad leader died change sqaud leader
-                    if unit== self.units[self.squad_leader] :
-                        print(self.units[self.squad_leader])
+                    if unit== self.squad_leader :
+                        print(self.squad_leader)
+                        
                         self.units.remove(unit)
-                        iters=0
-                        for s in self.units:
-                            #print(s)
-                            if s.exists():
-                                #print(iters)
-                                #print(self.squad_leader)
-                                self.squad_leader=iters
-                                #print(self.squad_leader)
-                                break
-                            iters+=1
-                        print(self.units[self.squad_leader])
+                        
+                        self.squad_leader=self.units[0]
+                       
+                        print(self.squad_leader)
+                        
                     else:
                         self.units.remove(unit)
                 

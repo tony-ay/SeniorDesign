@@ -266,7 +266,7 @@ while True:
         #if unit.getPlayer().getID() != Broodwar.self().getID():
         
         #for every squad
-        in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad.units[squad.squad_leader],Broodwar)
+        in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad.squad_leader,Broodwar)
         #input to DQN for action(correct reward is implimented in sqaud update function)
         if DQNVER==0:
             if in_sight:
