@@ -36,7 +36,12 @@ class Squad:
         self.reward=0.01
         self.killCounts=[]
         self.last_squad_leader=True
-
+        self.enemies=[]
+        self.enemies_old_health=[]
+        self.old_health=0
+        self.BASE_REWARD=0.01
+        self.POSITIVE_REWARD=10
+        self.NEGATIVE_REWARD=-10
     def add(self, unit):
         if self.squad_leader==None:
             self.units.append(unit)
@@ -45,6 +50,7 @@ class Squad:
             self.updateCenter()
             self.current_units+=1
             self.old_current_units+=1
+            self.old_health+=unit.getHitPoints()
             print(self.units)
         elif self.current_units<self.Max_units:
             self.units.append(unit)
@@ -52,6 +58,7 @@ class Squad:
             self.updateCenter()
             self.current_units+=1
             self.old_current_units+=1
+            self.old_health+=unit.getHitPoints()
             print(self.units)
         else:
             print("To many units in squad %d"%self.squad_number)
@@ -133,7 +140,7 @@ class Squad:
             
     def update(self, events):
         
-        self.reward=0.01
+        self.reward=self.BASE_REWARD
         iterator=0
         for unit in self.units:
             #print(iterator)
@@ -154,16 +161,44 @@ class Squad:
                         self.units.remove(unit)
                 
                     self.current_units-=1
-                    self.reward=-1
+                    self.reward=self.NEGATIVE_REWARD
                 elif len(self.units)==1 :
                     if self.last_squad_leader:
                         self.last_squad_leader=False
-                        self.reward=-1
+                        self.reward=self.NEGATIVE_REWARD
             elif unit.getKillCount()>self.killCounts[iterator]:
                 self.killCounts[iterator]= unit.getKillCount()
-                self.reward=1
+                self.reward=self.POSITIVE_REWARD
                 print("Unit %d got a kill"%iterator)
             
             iterator+=1
         self.updateCenter()
-   
+    def add_enemy(self,enemy):
+        if not self.enemies:
+            self.enemies.append(enemy)
+            self.enemies_old_health.append(enemy.getHitPoints())
+        elif self.enemies.count(enemy)==0:
+             self.enemies.append(enemy)
+             self.enemies_old_health.append(enemy.getHitPoints())
+             
+    def update_reward(self,visible_enemies):
+        if self.squad_number !=0 and self.squad_number!=1:  #correct Version number
+            self.reward=self.BASE_REWARD
+            total_health=0
+            for s in visible_enemies:   #loop through visible enemies
+                iterator=0
+                if self.enemies:        #check for a non-empty list
+                    for d in self.enemies:
+                        if s==d:        #if visible enemy in my list
+                            if self.enemies_old_health[iterator]> d.getHitPoints():
+                                self.reward=self.reward+(self.enemies_old_health[iterator]-d.getHitPoints())
+                                self.enemies_old_health[iterator]=d.getHitPoints()
+                                break
+                        iterator+=1
+            for a in self.units:        #loop through our units and get total health
+                total_health+=a.getHitPoints()
+                #print(a.getHitPoints())
+            if self.old_health>total_health:
+                self.reward=self.reward+(total_health-self.old_health)
+                self.old_health=total_health
+        
