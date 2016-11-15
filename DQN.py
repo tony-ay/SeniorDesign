@@ -30,6 +30,12 @@ def load_weights(model,Version,adam):
         adam = Adam(lr=1e-6)
         model.compile(loss='mse',optimizer=adam)
         print ("Weight load successfully")
+    elif Version==2:
+        print ("Now we load weight")
+        model.load_weights("model_3.h5")
+        adam = Adam(lr=1e-6)
+        model.compile(loss='mse',optimizer=adam)
+        print ("Weight load successfully")
     return adam
 
 def save_weights(model,Version):
@@ -43,6 +49,11 @@ def save_weights(model,Version):
         model.save_weights("model_2.h5", overwrite=True)
         with open("model_2.json", "w") as outfile:
             json.dump(model.to_json(), outfile)
+    elif Version==2:
+        print("Now we save model")
+        model.save_weights("model_3.h5", overwrite=True)
+        with open("model_3.json", "w") as outfile:
+            json.dump(model.to_json(), outfile)
             
 class DQN:
     def __init__(self,TorR,Version):
@@ -53,10 +64,10 @@ class DQN:
         CONFIG = 'nothreshold'
         if Version==0:
             self.ACTIONS = 3 # number of valid actions
-        elif Version==1:
+        elif Version==1 or Version==2:
             self.ACTIONS = 4 # number of valid actions
         self.GAMMA = 0.99 # decay rate of past observations
-        self.OBSERVATION = 10000. # timesteps to observe before training
+        self.OBSERVATION = 100. # timesteps to observe before training
         self.EXPLORE = 3000000. # frames over which to anneal epsilon
         self.FINAL_EPSILON = 0.0001 # final value of epsilon
         self.INITIAL_EPSILON = 0.1 # starting value of epsilon
@@ -197,7 +208,7 @@ class DQN:
         self.t = self.t + 1
     
         # save progress every 10000 iterations
-        if self.t % 10000 == 0:
+        if self.t % 100 == 0:
             save_weights(self.model,self.VERSION)
 
 

@@ -75,7 +75,7 @@ def drawVisibilityData():
             #but after alot of calls it breaks.
 
             Broodwar.drawDotMap(cybw.Position(x, y), drawColor)
-def combatDQN_input(squad_leader,bw):
+def combatDQN_input(squad,bw):
     #takes combat squad leader unit and returns
     in_sight=False
     #print(squad_leader)
@@ -85,15 +85,16 @@ def combatDQN_input(squad_leader,bw):
     distance_to_enemy=99999
     total_enemy_Hitpoints=0
     total_friendly_Hitpoints=0
-    sett=squad_leader.getUnitsInRadius(squad_leader.getType().sightRange())
+    sett=squad.squad_leader.getUnitsInRadius(squad.squad_leader.getType().sightRange())
     total_enemies = []
     for s in sett:
         if s.getPlayer().getID() != bw.self().getID():
             #number of enemy units in range
             in_sight =True
             number_of_enemy_units+=1
+            squad.add_enemy(s)
             #distance to closest enemy
-            tmp = squad_leader.getDistance(s)
+            tmp = squad.squad_leader.getDistance(s)
             if tmp<distance_to_enemy:
                 distance_to_enemy=tmp
                 closest_enemy=s
@@ -112,25 +113,28 @@ def combatDQN_input(squad_leader,bw):
     #print(number_of_freindly_units)
 
     #Units own health
-    own_health=squad_leader.getHitPoints()
+    own_health=squad.squad_leader.getHitPoints()
     #print(own_health)
     #print(in_sight)
+    if squad.squad_number==2:
+        squad.update_reward(total_enemies)
     return in_sight, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints,total_friendly_Hitpoints,own_health,total_enemies
 
 
 #'?' : (Any character) To train the network from scratch(will overwrite any previous save points)
 #'RT': To train the network from last save point(explore,observation,and epsilon reset)
 #'R' : To run network with out training or resetting save points
-TYPE='T'
+TYPE='R'
 
-# 0 : Runs DQN only when in combat
-# 1 : Runs DQN at all times
-DQNVER=0
+# 0 : Runs DQN only when in combat(can change rewards inside code fore decleration of squad)
+# 1 : Runs DQN at all times(can change rewards inside code fore decleration of squad)
+# 2 : Runs DQN ar all times with different rewards than 1(rewards are calculated inside squad.update_rewards())
+DQNVER=2
 
 
 
 
-if DQNVER==0 or DQNVER==1:
+if DQNVER==0 or DQNVER==1 or DQNVER==2:
     Combatmodel= DQN(TYPE,DQNVER)
 
 
@@ -147,7 +151,7 @@ while True:
     Broodwar.sendText( "Hello world from python!")
     Broodwar.printf( "Hello world from python!")
 
-    squad = Squad(1)
+    squad = Squad(DQNVER)
 
     # need newline to flush buffer
     Broodwar << "The map is " << Broodwar.mapName() << ", a " \
@@ -266,8 +270,9 @@ while True:
         #if unit.getPlayer().getID() != Broodwar.self().getID():
         
         #for every squad
-        in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad.squad_leader,Broodwar)
+        in_sight,number_of_enemy_units,number_of_friendly_units, distance_to_enemy, closest_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health, total_enemies=combatDQN_input(squad,Broodwar)
         #input to DQN for action(correct reward is implimented in sqaud update function)
+        
         if DQNVER==0:
             if in_sight:
                 a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
@@ -290,7 +295,7 @@ while True:
                 squad.explore()
             else:
                 ctr += 1
-        elif DQNVER==1:
+        elif DQNVER==1 or DQNVER==2:
             a_t=Combatmodel.trainNetwork(squad.reward, number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health)
             if a_t[0]==1:
                 #attack closest_enemy
