@@ -40,8 +40,8 @@ class Squad:
         self.enemies_old_health=[]
         self.old_health=0
         self.BASE_REWARD=0.01
-        self.POSITIVE_REWARD=10
-        self.NEGATIVE_REWARD=-10
+        self.POSITIVE_REWARD=100
+        self.NEGATIVE_REWARD=-50
     def add(self, unit):
         if self.squad_leader==None:
             self.units.append(unit)
@@ -182,7 +182,7 @@ class Squad:
              self.enemies_old_health.append(enemy.getHitPoints())
              
     def update_reward(self,visible_enemies):
-        if self.squad_number !=0 and self.squad_number!=1:  #correct Version number
+        if self.squad_number ==2:  #correct Version number
             self.reward=self.BASE_REWARD
             total_health=0
             for s in visible_enemies:   #loop through visible enemies
