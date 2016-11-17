@@ -1,10 +1,18 @@
 import cybw
 from cybw import Position
 
-from squad import Squad
-from DQN import DQN
+from PIL import ImageGrab
 
-from time import sleep
+import skimage as skimage1
+from skimage import transform, color, exposure
+from skimage.transform import rotate
+from skimage.viewer import ImageViewer
+import numpy
+
+from squad import Squad
+from DQN import DQN,VDQN
+
+from time import time, sleep
 from random import randint
 
 client = cybw.BWAPIClient
@@ -124,21 +132,24 @@ def combatDQN_input(squad,bw):
 #'?' : (Any character) To train the network from scratch(will overwrite any previous save points)
 #'RT': To train the network from last save point(explore,observation,and epsilon reset)
 #'R' : To run network with out training or resetting save points
-TYPE='R'
+TYPE='T'
 
 # 0 : Runs DQN only when in combat(can change rewards inside code fore decleration of squad)
 # 1 : Runs DQN at all times(can change rewards inside code fore decleration of squad)
 # 2 : Runs DQN ar all times with different rewards than 1(rewards are calculated inside squad.update_rewards())
-DQNVER=2
+# 3 : Runs DQN with image. Make sure to have BroodWar in Windowed mode.
+DQNVER=3
 
 
 
 
 if DQNVER==0 or DQNVER==1 or DQNVER==2:
     Combatmodel= DQN(TYPE,DQNVER)
-
+elif DQNVER==3:
+    Combatmodel = VDQN(TYPE,DQNVER)
 
 print("Connecting...")
+
 reconnect()
 while True:
     print("waiting to enter match")
@@ -151,8 +162,16 @@ while True:
     Broodwar.sendText( "Hello world from python!")
     Broodwar.printf( "Hello world from python!")
 
-    squad = Squad(DQNVER)
+    
+    
 
+    squad = Squad(DQNVER)
+    ratioW=(Broodwar.mapWidth()*32)/80
+    ratioH=(Broodwar.mapHeight()*32)/80
+    print(Broodwar.mapWidth()*32)
+    print(Broodwar.mapHeight()*32)
+    
+    
     # need newline to flush buffer
     Broodwar << "The map is " << Broodwar.mapName() << ", a " \
         << len(Broodwar.getStartLocations()) << " player map" << " \n"
@@ -310,6 +329,29 @@ while True:
             else:
                 #do nothing
                 print("do nothing")
+        elif DQNVER==3:
+            #get image
+            image1=ImageGrab.grab(bbox=(491,759,748,1016))
+            #image1.show()
+            #sleep(5)
+            image = numpy.array(image1)
+            image = skimage1.transform.resize(image,(80,80))
+            image=skimage1.color.rgb2gray(image)
+            image = skimage1.exposure.rescale_intensity(image,out_range=(0,255))
+            Combatmodel.trainNetwork(squad.reward,image)
+            #use Combatmodel.a_t and Combatmodel.place to get action and do it
+            
+            once=False
+            if Combatmodel.place<6400:
+                #chose to move
+                x=Combatmodel.place%80
+                y=Combatmodel.place/80
+                squad.move(Position( ratioW*x,ratioH*y ))
+             else:
+                #chose to attackmove
+                x=(Combatmodel.place-6400)%80
+                y=(Combatmodel.place-6400)/80
+                squad.attackMove(Position(ratioW*x,ratioH*y))
         else:
             print("Inproper DQNVER input")
         """
