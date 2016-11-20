@@ -16,6 +16,7 @@ from keras.layers.convolutional import Convolution2D, MaxPooling2D
 from keras.optimizers import SGD , Adam
 
 
+
 def load_weights(model,Version,adam):
     if Version==0:
         print ("Now we load weight")
@@ -246,13 +247,13 @@ class VDQN:
         
         GAME = 'bird' # the name of the game being played for log files
         CONFIG = 'nothreshold'
-        self.ACTIONS = 12800 # number of valid actions
+        self.ACTIONS = 13000 # number of valid actions
         self.GAMMA = 0.99 # decay rate of past observations
         self.OBSERVATION = 10000. # timesteps to observe before training
         self.EXPLORE = 3000000. # frames over which to anneal epsilon
         self.FINAL_EPSILON = 0.0001 # final value of epsilon
         self.INITIAL_EPSILON = 0.1 # starting value of epsilon
-        self.REPLAY_MEMORY = 50000 # number of previous transitions to remember
+        self.REPLAY_MEMORY = 6000 # number of previous transitions to remember
         self.BATCH = 32 # size of minibatch
         self.FRAME_PER_ACTION = 1
         self.ARRAY_COL=6 #Number of Columns in DQN
@@ -263,6 +264,7 @@ class VDQN:
         self.img_cols = 80
         self.img_channels = 4
         self.FIRST_CALL=1
+        
         print("Now we build the model")
         self.model = Sequential()
         self.model.add(Convolution2D(32, 8, 8, subsample=(4,4),init=lambda shape, name: normal(shape, scale=0.01, name=name), border_mode='same',input_shape=(self.img_channels,self.img_rows,self.img_cols)))
@@ -302,13 +304,18 @@ class VDQN:
         self.action_index = 0
         self.r_t = 0
         self.a_t = np.zeros([self.ACTIONS])
+         
     def trainNetwork(self, reward, image):
+        #tracker = SummaryTracker()
         #DQNinput=[number_of_enemy_units, number_of_friendly_units, distance_to_enemy, total_enemy_Hitpoints, total_friendly_Hitpoints, own_health]
+
+       
+        self.x_t=image
         if self.FIRST_CALL==1:
             self.FIRST_CALL=0
             self.D = deque()
             
-            self.x_t=image
+            
                 
             self.s_t = np.stack((self.x_t, self.x_t, self.x_t, self.x_t), axis=0)
             #In Keras, need to reshape
@@ -316,7 +323,7 @@ class VDQN:
         
         loss = 0
         q = self.model.predict(self.s_t) #input a stack of 4 images, get the prediction
-        
+        #tracker.print_diff()
         #choose an action epsilon greedy
         if self.t % self.FRAME_PER_ACTION == 0:
             self.a_t[self.place]=0
@@ -340,7 +347,7 @@ class VDQN:
         #We reduced the epsilon gradually
         if self.epsilon > self.FINAL_EPSILON and self.t > self.OBSERVE:
             self.epsilon -= (self.INITIAL_EPSILON - self.FINAL_EPSILON) / self.EXPLORE
-        self.x_t=image
+        
         
                 
         self.x_t = self.x_t.reshape(1, 1, self.x_t.shape[0], self.x_t.shape[1])

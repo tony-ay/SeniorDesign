@@ -138,7 +138,7 @@ TYPE='T'
 # 1 : Runs DQN at all times(can change rewards inside code fore decleration of squad)
 # 2 : Runs DQN ar all times with different rewards than 1(rewards are calculated inside squad.update_rewards())
 # 3 : Runs DQN with image. Make sure to have BroodWar in Windowed mode.
-DQNVER=3
+DQNVER=2
 
 
 
@@ -149,7 +149,7 @@ elif DQNVER==3:
     Combatmodel = VDQN(TYPE,DQNVER)
 
 print("Connecting...")
-
+once=True
 reconnect()
 while True:
     print("waiting to enter match")
@@ -168,8 +168,6 @@ while True:
     squad = Squad(DQNVER)
     ratioW=(Broodwar.mapWidth()*32)/80
     ratioH=(Broodwar.mapHeight()*32)/80
-    print(Broodwar.mapWidth()*32)
-    print(Broodwar.mapHeight()*32)
     
     
     # need newline to flush buffer
@@ -338,20 +336,25 @@ while True:
             image = skimage1.transform.resize(image,(80,80))
             image=skimage1.color.rgb2gray(image)
             image = skimage1.exposure.rescale_intensity(image,out_range=(0,255))
+            
+            
+            
             Combatmodel.trainNetwork(squad.reward,image)
             #use Combatmodel.a_t and Combatmodel.place to get action and do it
             
-            once=False
+            
             if Combatmodel.place<6400:
                 #chose to move
                 x=Combatmodel.place%80
                 y=Combatmodel.place/80
                 squad.move(Position( ratioW*x,ratioH*y ))
-             else:
+            elif Combatmodel.place>=6400 and Combatmodel.place <12800:
                 #chose to attackmove
                 x=(Combatmodel.place-6400)%80
                 y=(Combatmodel.place-6400)/80
                 squad.attackMove(Position(ratioW*x,ratioH*y))
+            else:
+                print("do nothing")
         else:
             print("Inproper DQNVER input")
         """
