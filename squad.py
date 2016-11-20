@@ -191,7 +191,8 @@ class Squad:
                     for d in self.enemies:
                         if s==d:        #if visible enemy in my list
                             if self.enemies_old_health[iterator]> d.getHitPoints():
-                                self.reward=self.reward+(self.enemies_old_health[iterator]-d.getHitPoints())
+                                #added a times 4 multipler to positive reward
+                                self.reward=self.reward+((self.enemies_old_health[iterator]-d.getHitPoints())*4)
                                 self.enemies_old_health[iterator]=d.getHitPoints()
                                 break
                         iterator+=1
