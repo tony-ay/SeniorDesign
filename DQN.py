@@ -389,7 +389,7 @@ class VDQN:
                 targets[i] = self.model.predict(state_t)  # Hitting each buttom probability
                 Q_sa = self.model.predict(state_t1)
 
-                if reward_t<=0.1:
+                if reward_t<0:
                     targets[i, action_t] = reward_t
                 else:
                     targets[i, action_t] = reward_t + self.GAMMA * np.max(self.Q_sa)
